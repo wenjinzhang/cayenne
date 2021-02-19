@@ -20,19 +20,35 @@
 package org.apache.cayenne.map.event;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 /**
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(MapEvent.class)
 public class MapEventTest {
-
+	@Mock
+    private MapEvent event;
+	
     @Test
     public void testNoNameChange() throws Exception {
-        MapEvent event = new MapEventFixture(new Object(), "someName");
+//        MapEvent event = new MapEventFixture(new Object(), "someName");
+        event = mock(MapEvent.class
+        	         ,withSettings()
+        	         .useConstructor(new Object(), "someName")
+        	         .defaultAnswer(CALLS_REAL_METHODS));
+        
+        
+        verify(event).setOldName("someName");
         assertEquals("someName", event.getNewName());
         assertFalse(event.isNameChange());
     }

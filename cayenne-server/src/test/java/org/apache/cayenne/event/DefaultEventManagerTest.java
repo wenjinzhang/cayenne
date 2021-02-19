@@ -19,10 +19,12 @@
 
 package org.apache.cayenne.event;
 
+
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Spy;
 
 import java.util.EventListener;
 import java.util.EventObject;
@@ -39,6 +41,9 @@ public class DefaultEventManagerTest implements EventListener {
 
     // the event manager used for testing
     private EventManager eventManager;
+    
+    @Spy
+    private CayenneEvent mockEvent = new CayenneEvent(this);
 
     @Before
     public void setUp() {
@@ -211,7 +216,7 @@ public class DefaultEventManagerTest implements EventListener {
     public void testValidSubclassOfRegisteredEventClass() throws Exception {
         EventSubject subject = EventSubject.getSubject(this.getClass(), "XXX");
         eventManager.addListener(this, "seeNotification", CayenneEvent.class, subject);
-        eventManager.postEvent(new MyCayenneEvent(this), subject);
+        eventManager.postEvent(mockEvent, subject);
 
         assertReceivedEvents(1, this);
     }
@@ -448,12 +453,4 @@ public class DefaultEventManagerTest implements EventListener {
         helper.runTest(5000);
     }
 
-}
-
-// dummy class to test for incompatible events
-class MyCayenneEvent extends CayenneEvent {
-
-    public MyCayenneEvent(EventListener l) {
-        super(l);
-    }
 }
